@@ -14,7 +14,7 @@ const menu = {
       title: "予定を見る",
     },
     {
-      path: "/schedule",
+      path: "/reserve",
       title: "予定を作る",
     },
   ],
@@ -33,7 +33,9 @@ export const Layout: FC<Props> = ({ children }) => {
     <div className={style.container}>
       <header>
         <h1 className={style.logo}>あぽあぽん</h1>
-        <Button title="ログアウト" onClick={handleLogout} />
+        <div>
+          <Button title="ログアウト" onClick={handleLogout} />
+        </div>
       </header>
       <nav>
         <div className={style.wrapper}>
