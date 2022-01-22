@@ -26,7 +26,7 @@ export const i_event_conv: FirestoreDataConverter<i_event> = {
     const d = ss.data(opt) as i_event_sv | undefined;
     return {
       name: d?.name ?? "",
-      begin: d?.begin.toDate() ?? new Date(),
+      begin: d?.begin?.toDate() ?? null,
       begindate: d?.begindate ?? "",
       description: d?.description ?? "",
       owner: doc(

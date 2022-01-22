@@ -2,7 +2,7 @@ import { DocumentReference, Timestamp } from "firebase/firestore";
 
 interface i_event_tdate<TDate> {
   name: string;
-  begin: TDate;
+  begin: TDate | null;
   begindate: string;
   description: string;
   owner: DocumentReference<i_user>;

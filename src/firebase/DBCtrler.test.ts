@@ -120,14 +120,13 @@ test(
     const ev_name = "test event";
     const create_event_result = await db_owner.createEvent(
       ev_name,
-      begin,
       description
     );
     expect(create_event_result).not.toEqual("");
 
     const expected_event_data: i_event = {
-      begin: begin,
-      begindate: begindate,
+      begin: null,
+      begindate: "",
       challenger: null,
       description: description,
       name: ev_name,
@@ -146,6 +145,9 @@ test(
 
     expected_event_data.owner =
       db_challenger._getUserDocRef(TEST_USER_OWNER_ID);
+    expected_event_data.begin = begin;
+    expected_event_data.begindate = begindate;
+
     expected_event_data.challenger = db_challenger._getUserDocRef(
       TEST_USER_CHALLENGER_ID
     );
