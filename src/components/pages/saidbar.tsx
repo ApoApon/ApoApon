@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
-import {EventApi, formatDate} from "@fullcalendar/react"; 
-
+import {EventApi} from "@fullcalendar/react"; 
+// , formatDate
 interface Props {
   currentEvents:EventApi[];
   toggleWeekends:() => void;
@@ -23,7 +23,8 @@ interface Props {
 // );
 
 // eslint-disable-next-line react/prop-types
-const Sidebar:React.VFC<Props> = ({ toggleWeekends, weekendsVisible, currentEvents }) => (
+const Sidebar:React.VFC<Props> = ({ toggleWeekends, weekendsVisible}) => (
+  // , currentEvents 
   <div className="calendar-app-sidebar">
     <div className="calendar-app-sidebar-section">
       <h2>使い方</h2>
