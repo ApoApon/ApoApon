@@ -38,8 +38,8 @@ function getDateAsJST(date: Date | string, hhmm: string): Date {
 }
 
 //#region i_event
-function getEventPath(date: Date, event_id?: string): string {
-  const collection_path = `event/${getJSTDate(date)}/event`;
+function getEventPath(event_id?: string): string {
+  const collection_path = "event";
   return event_id == undefined
     ? collection_path
     : `${collection_path}/${event_id}`;
@@ -50,16 +50,11 @@ function getEventDocRef(
   date: Date,
   event_id: string
 ): DocumentReference<i_event> {
-  return doc(db, getEventPath(date, event_id)).withConverter(
-    dbtconv.i_event_conv
-  );
+  return doc(db, getEventPath(event_id)).withConverter(dbtconv.i_event_conv);
 }
 
-function getEventCollectionRef(
-  db: Firestore,
-  date: Date
-): CollectionReference<i_event> {
-  return collection(db, getEventPath(date)).withConverter(dbtconv.i_event_conv);
+function getEventCollectionRef(db: Firestore): CollectionReference<i_event> {
+  return collection(db, getEventPath()).withConverter(dbtconv.i_event_conv);
 }
 //#endregion
 
@@ -170,8 +165,9 @@ export class DBCtrler {
     begin: Date,
     description: string
   ): Promise<string> {
-    const addEventResult = await addDoc(getEventCollectionRef(this.db, begin), {
+    const addEventResult = await addDoc(getEventCollectionRef(this.db), {
       begin: begin,
+      begindate: getJSTDate(begin),
       challenger: null,
       createddate: serverTimestamp(),
       description: description,
@@ -233,14 +229,35 @@ export class DBCtrler {
     });
   }
 
-  public getAllEvent(date: Date): Promise<QuerySnapshot<i_event>> {
-    return getDocs(getEventCollectionRef(this.db, date));
+  public getAllEvent(): Promise<QuerySnapshot<i_event>> {
+    return getDocs(getEventCollectionRef(this.db));
   }
-  public getAllChallengeableEvent(date: Date): Promise<QuerySnapshot<i_event>> {
+  public getAllEventInTargetDay(date: Date): Promise<QuerySnapshot<i_event>> {
     return getDocs(
       query(
-        getEventCollectionRef(this.db, date),
-        where("challenger", "==", null)
+        getEventCollectionRef(this.db),
+        where("begindate", "==", getJSTDate(date))
+      )
+    );
+  }
+  public getAllChallengeableEvent(): Promise<QuerySnapshot<i_event>> {
+    return getDocs(
+      query(
+        getEventCollectionRef(this.db),
+        where("challenger", "==", null),
+        where("begin", ">", new Date())
+      )
+    );
+  }
+  public getgetAllChallengeableEventInTargetDay(
+    date: Date
+  ): Promise<QuerySnapshot<i_event>> {
+    return getDocs(
+      query(
+        getEventCollectionRef(this.db),
+        where("begindate", "==", getJSTDate(date)),
+        where("challenger", "==", null),
+        where("begin", ">", new Date())
       )
     );
   }
