@@ -280,8 +280,7 @@ export class DBCtrler {
     );
   }
 
-  public getEventData(event_id: string): Promise<DocumentSnapshot<i_event>>
-  {
+  public getEventData(event_id: string): Promise<DocumentSnapshot<i_event>> {
     return getDoc(getEventDocRef(this.db, event_id));
   }
   //#endregion
@@ -372,13 +371,11 @@ export class DBCtrler {
         err_msg += "ERR: Schedule is not empty...\n";
         elem_not_empty.forEach((v) => (err_msg += v + "\n"));
       }
-      if (elem_not_in_remote.length > 0)
-      {
-        err_msg+="ERR: Schedule is not in remote...\n";
+      if (elem_not_in_remote.length > 0) {
+        err_msg += "ERR: Schedule is not in remote...\n";
         elem_not_in_remote.forEach((v) => (err_msg += v + "\n"));
       }
-      if (err_msg != "")
-        return Promise.reject(err_msg);
+      if (err_msg != "") return Promise.reject(err_msg);
 
       elem_to_delete.forEach((v) => d.delete(v));
 
