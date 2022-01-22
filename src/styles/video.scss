@@ -1,0 +1,85 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.videoPage {
+  padding: 24px;
+}
+
+.videos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.access {
+  text-align: right;
+  margin-bottom: 12px;
+}
+
+.videoItem {
+  position: relative;
+}
+
+.userName {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+video {
+  width: 100%;
+  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+
+  border-radius: 4px;
+  color: white;
+  padding: 4px 12px;
+  font-size: 1.5rem;
+}
+
+button:first-child {
+  background-color: tomato;
+}
+
+button:last-child {
+  background-color: blue;
+}
+
+.percentRed {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30%;
+  height: 100%;
+  background-color: tomato;
+}
+
+.vote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 24px;
+}
+
+.percent {
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 24px 0;
+  height: 24px;
+  background-color: blue;
+  position: relative;
+}
