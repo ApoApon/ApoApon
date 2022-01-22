@@ -9,7 +9,7 @@ import { Auth, connectAuthEmulator, getAuth } from "firebase/auth";
 
 const EMU_HOST = "localhost";
 const EMU_STORE_PORT = 8080;
-const EMU_AUTH_URL = `${EMU_HOST}:9099`;
+const EMU_AUTH_URL = `http://${EMU_HOST}:9099`;
 
 const firebaseConfig = {
   apiKey: "AIzaSyB4VWEPqqEobljfWN4JUdD69ntOEjxPA_A",
@@ -23,13 +23,14 @@ const firebaseConfig = {
 
 export class FirebaseCredential {
   public readonly app: FirebaseApp;
-  public readonly analytics: Analytics;
+  public readonly analytics?: Analytics;
   public readonly auth: Auth;
   public readonly firestore: Firestore;
 
   constructor(opt?: FirebaseOptions, is_debug = false) {
     this.app = initializeApp(opt ?? firebaseConfig);
-    this.analytics = getAnalytics(this.app);
+    if (!is_debug)
+      this.analytics = getAnalytics(this.app);
     this.auth = getAuth(this.app);
     this.firestore = getFirestore(this.app);
 
