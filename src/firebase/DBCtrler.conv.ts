@@ -1,6 +1,14 @@
-import { i_event, i_event_sv, i_freetime, i_user } from "./DBCtrler.type";
+import {
+  i_event,
+  i_event_sv,
+  i_freetime,
+  i_freetime_sv,
+  i_user,
+  event_ref_type,
+} from "./DBCtrler.type";
 
 import { doc, FirestoreDataConverter } from "firebase/firestore";
+import { isMap } from "util/types";
 
 export const i_event_conv: FirestoreDataConverter<i_event> = {
   toFirestore: (jsData) => {
@@ -52,11 +60,15 @@ export const i_user_conv: FirestoreDataConverter<i_user> = {
 export const i_freetime_conv: FirestoreDataConverter<i_freetime> = {
   toFirestore: (jsData) => {
     return {
-      event: jsData.event,
+      event: isMap(jsData.event)
+        ? Object.fromEntries(jsData.event)
+        : jsData.event,
     };
   },
   fromFirestore: (ss, opt) => {
-    const d = ss.data(opt) as i_freetime;
-    return d;
+    const d = ss.data(opt) as i_freetime_sv;
+    return {
+      event: new Map<string, event_ref_type>(Object.entries(d.event)),
+    };
   },
 };

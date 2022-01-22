@@ -20,6 +20,11 @@ export interface i_user {
   draw: number;
 }
 
-export interface i_freetime {
-  event: Map<string, DocumentReference<i_event> | null>;
+interface i_freetime_tevent<TEvent> {
+  event: TEvent;
 }
+
+export type event_ref_type = DocumentReference<i_event> | null;
+export type t_freetime_dic = { [hhmm: string]: event_ref_type };
+export type i_freetime = i_freetime_tevent<Map<string, event_ref_type>>;
+export type i_freetime_sv = i_freetime_tevent<t_freetime_dic>;
