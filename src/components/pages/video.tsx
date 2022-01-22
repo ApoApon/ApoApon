@@ -100,8 +100,8 @@ export const Video: VFC = () => {
         </div>
 
         <div className="vote">
-          <button>Player1</button>
-          <button>Player2</button>
+          <button className="vote-button">Player1</button>
+          <button className="vote-button">Player2</button>
         </div>
       </div>
     </Layout>
