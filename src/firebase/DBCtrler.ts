@@ -129,9 +129,12 @@ export class DBCtrler {
   }
 
   public getUser(user_id?: string): Promise<i_user | undefined> {
-    return getDoc(getUserDocRef(this.db, user_id ?? this.user_id)).then((d) =>
-      d.data()
-    );
+    return getDoc(getUserDocRef(this.db, user_id ?? this.user_id))
+      .then((d) => d.data())
+      .catch((msg) => {
+        console.warn("warn:", msg);
+        return undefined;
+      });
   }
 
   public deleteUser(user_id?: string): Promise<void> {
@@ -192,8 +195,12 @@ export class DBCtrler {
 
       const data = current_free_time_ss.data();
       const begin_hhmm = getJSTHHMM(begin);
-      if (!data.event.has(begin_hhmm) || !data.event.get(begin_hhmm) != null)
-        return Promise.reject("freetime not empty");
+      if (!data.event.has(begin_hhmm))
+        return Promise.reject(
+          `create : freetime (${begin_hhmm}) not available`
+        );
+      if (data.event.get(begin_hhmm) != null)
+        return Promise.reject(`create : freetime (${begin_hhmm}) not empty`);
 
       transaction.update(current_free_time_ss.ref, {
         [`event.${begin_hhmm}`]: addEventResult,
@@ -223,8 +230,12 @@ export class DBCtrler {
 
       const data = current_free_time_ss.data();
       const begin_hhmm = getJSTHHMM(begin);
-      if (!data.event.has(begin_hhmm) || !data.event.get(begin_hhmm) != null)
-        return Promise.reject("freetime not empty");
+      if (!data.event.has(begin_hhmm))
+        return Promise.reject(
+          `challenge : freetime (${begin_hhmm}) not available`
+        );
+      if (data.event.get(begin_hhmm) != null)
+        return Promise.reject(`challenge : freetime (${begin_hhmm}) not empty`);
 
       transaction.update(current_free_time_ss.ref, {
         [`event.${begin_hhmm}`]: event_data_ss.ref,
