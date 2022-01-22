@@ -18,9 +18,13 @@
     "@types/react-dom": "^17.0.11",
     "firebase": "^9.6.4",
     "moment-timezone": "^0.5.34",
+    "node-sass": "^7.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-scripts": "5.0.0"
+    "react-router-dom": "^6.2.1",
+    "react-scripts": "5.0.0",
+    "sass": "^1.49.0",
+    "skyway-js": "^4.4.3"
   },
   "devDependencies": {
     "@types/react": "^17.0.38",
