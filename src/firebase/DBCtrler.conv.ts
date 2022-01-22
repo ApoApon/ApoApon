@@ -23,20 +23,22 @@ export const i_event_conv: FirestoreDataConverter<i_event> = {
     };
   },
   fromFirestore: (ss, opt) => {
-    const d = ss.data(opt) as i_event_sv;
+    const d = ss.data(opt) as i_event_sv | undefined;
     return {
-      name: d.name,
-      begin: d.begin.toDate(),
-      begindate: d.begindate,
-      description: d.description,
-      owner: doc(d.owner.firestore, d.owner.path).withConverter(i_user_conv),
+      name: d?.name ?? "",
+      begin: d?.begin.toDate() ?? new Date(),
+      begindate: d?.begindate ?? "",
+      description: d?.description ?? "",
+      owner: doc(ss.ref.firestore, d?.owner.path ?? "").withConverter(
+        i_user_conv
+      ),
       challenger:
-        d.challenger == null
+        d?.challenger == null
           ? null
           : doc(d.challenger.firestore, d.challenger.path).withConverter(
             i_user_conv
           ),
-      createddate: d.createddate.toDate(),
+      createddate: d?.createddate.toDate() ?? new Date(),
     };
   },
 };
