@@ -6,5 +6,5 @@ type ButtonProps = {
   onClick: () => void;
 };
 export const Button: FC<ButtonProps> = (props) => {
-  return <button className={style.button} onClick={props.onClick}>{props.title}</button>;
+  return <button onClick={props.onClick}>{props.title}</button>;
 };
