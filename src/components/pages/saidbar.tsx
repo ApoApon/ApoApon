@@ -7,20 +7,20 @@ interface Props {
   weekendsVisible:boolean;
 }
 
-// 予定一覧の関数
-const rendarSidebarEvent = (event: EventApi) => (
-  <li key={event.id}>
-    <b>
-      {formatDate(event.start!, {
-        year:"numeric",
-        month:"short",
-        day:"numeric",
-        locale:"ja",
-      })}
-    </b>
-    <i>{ event.title }</i>
-  </li>
-);
+// // 予定一覧の関数
+// const rendarSidebarEvent = (event: EventApi) => (
+//   <li key={event.id}>
+//     <b>
+//       {formatDate(event.start!, {
+//         year:"numeric",
+//         month:"short",
+//         day:"numeric",
+//         locale:"ja",
+//       })}
+//     </b>
+//     <i>{ event.title }</i>
+//   </li>
+// );
 
 // eslint-disable-next-line react/prop-types
 const Sidebar:React.VFC<Props> = ({ toggleWeekends, weekendsVisible, currentEvents }) => (
@@ -44,8 +44,8 @@ const Sidebar:React.VFC<Props> = ({ toggleWeekends, weekendsVisible, currentEven
       </label>
     </div>
     <div className="calendar-app-sidebar-section">
-      <h2>予定一覧({currentEvents.length})</h2>
-      <ul>{currentEvents.map(rendarSidebarEvent)}</ul>
+      {/* <h2>予定一覧({currentEvents.length})</h2>
+      <ul>{currentEvents.map(rendarSidebarEvent)}</ul> */}
     </div>
   </div>
 );
