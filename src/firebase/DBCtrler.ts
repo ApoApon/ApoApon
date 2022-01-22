@@ -18,6 +18,7 @@ import {
   QuerySnapshot,
   query,
   where,
+  DocumentSnapshot,
 } from "firebase/firestore";
 import moment from "moment-timezone";
 
@@ -47,7 +48,6 @@ function getEventPath(event_id?: string): string {
 
 function getEventDocRef(
   db: Firestore,
-  date: Date,
   event_id: string
 ): DocumentReference<i_event> {
   return doc(db, getEventPath(event_id)).withConverter(dbtconv.i_event_conv);
@@ -108,7 +108,7 @@ export class DBCtrler {
     this.db = db;
   }
 
-  private getUserDocRef(user_id?: string) {
+  public _getUserDocRef(user_id?: string) {
     return getUserDocRef(this.db, user_id ?? this.user_id);
   }
 
@@ -118,7 +118,7 @@ export class DBCtrler {
     icon: string,
     user_id?: string
   ): Promise<void> {
-    return setDoc(this.getUserDocRef(user_id), {
+    return setDoc(this._getUserDocRef(user_id), {
       displayname: displayname,
       icon: icon,
       win: 0,
@@ -127,13 +127,14 @@ export class DBCtrler {
     });
   }
 
-  public getUser(user_id?: string): Promise<i_user | undefined>
-  {
-    return getDoc(getUserDocRef(this.db, user_id ?? this.user_id)).then(d => d.data());
+  public getUser(user_id?: string): Promise<i_user | undefined> {
+    return getDoc(getUserDocRef(this.db, user_id ?? this.user_id)).then((d) =>
+      d.data()
+    );
   }
 
   public deleteUser(user_id?: string): Promise<void> {
-    return deleteDoc(this.getUserDocRef(user_id));
+    return deleteDoc(this._getUserDocRef(user_id));
   }
 
   public updateUserData(
@@ -141,24 +142,24 @@ export class DBCtrler {
     icon: string | undefined,
     user_id?: string
   ): Promise<void> {
-    return updateDoc(this.getUserDocRef(user_id), {
+    return updateDoc(this._getUserDocRef(user_id), {
       displayname: displayname,
       icon: icon,
     });
   }
 
   public incrementWinRecord(): Promise<void> {
-    return updateDoc(this.getUserDocRef(), {
+    return updateDoc(this._getUserDocRef(), {
       win: increment(1),
     });
   }
   public incrementDrawRecord(): Promise<void> {
-    return updateDoc(this.getUserDocRef(), {
+    return updateDoc(this._getUserDocRef(), {
       draw: increment(1),
     });
   }
   public incrementLoseRecord(): Promise<void> {
-    return updateDoc(this.getUserDocRef(), {
+    return updateDoc(this._getUserDocRef(), {
       lose: increment(1),
     });
   }
@@ -177,7 +178,7 @@ export class DBCtrler {
       createddate: serverTimestamp(),
       description: description,
       name: name,
-      owner: this.getUserDocRef(),
+      owner: this._getUserDocRef(),
     });
 
     return runTransaction(this.db, async (transaction) => {
@@ -209,7 +210,7 @@ export class DBCtrler {
   ): Promise<boolean> {
     return runTransaction(this.db, async (transaction) => {
       const event_data_ss = await transaction.get(
-        getEventDocRef(this.db, begin, event_id)
+        getEventDocRef(this.db, event_id)
       );
       if (!event_data_ss.exists()) return Promise.reject("event not found");
 
@@ -228,7 +229,7 @@ export class DBCtrler {
         [`event.${begin_hhmm}`]: event_data_ss.ref,
       });
       transaction.update(event_data_ss.ref, {
-        challenger: this.getUserDocRef(),
+        challenger: this._getUserDocRef(),
       });
       return true;
     });
@@ -254,7 +255,7 @@ export class DBCtrler {
       )
     );
   }
-  public getgetAllChallengeableEventInTargetDay(
+  public getAllChallengeableEventInTargetDay(
     date: Date
   ): Promise<QuerySnapshot<i_event>> {
     return getDocs(
@@ -265,6 +266,11 @@ export class DBCtrler {
         where("begin", ">", new Date())
       )
     );
+  }
+
+  public getEventData(event_id: string): Promise<DocumentSnapshot<i_event>>
+  {
+    return getDoc(getEventDocRef(this.db, event_id));
   }
   //#endregion
 
@@ -304,6 +310,67 @@ export class DBCtrler {
         ret.set(doc.id, this.toDateKeyMap(JSTDateStr, doc.data().event));
       });
       return ret;
+    });
+  }
+
+  public addFreetime(times: Array<Date>) {
+    if (times.length <= 0) return Promise.reject("invalid time-count");
+
+    return runTransaction(this.db, async (transaction) => {
+      const doc_ref = getFreetimeDocRef(this.db, times[0], this.user_id);
+      const remote_freetime = await transaction.get(doc_ref);
+
+      const val = new Map<string, DocumentReference<i_event> | null>();
+      times.forEach((v) => val.set(getJSTHHMM(v), null));
+
+      const d = remote_freetime.data();
+      if (remote_freetime.exists() && d != undefined)
+        d.event.forEach((v, k) => val.set(k, v));
+
+      return transaction.set(doc_ref, { event: val });
+    });
+  }
+
+  public removeFreetime(times: Array<Date>) {
+    if (times.length <= 0) return Promise.reject("invalid time-count");
+
+    return runTransaction(this.db, async (transaction) => {
+      const doc_ref = getFreetimeDocRef(this.db, times[0], this.user_id);
+      const remote_freetime = await transaction.get(doc_ref);
+      const d = remote_freetime.data()?.event;
+
+      if (!remote_freetime.exists() || d == undefined)
+        return Promise.reject("nodata is in the remote");
+
+      const elem_not_in_remote = new Array<string>();
+      const elem_not_empty = new Array<string>();
+      const elem_to_delete = new Array<string>();
+
+      times.forEach((v) => {
+        const time_str = getJSTHHMM(v);
+        if (d.has(time_str)) {
+          if (d.get(time_str) != null) elem_not_empty.push(time_str);
+          else if (!elem_to_delete.includes(time_str))
+            elem_to_delete.push(time_str);
+        } else elem_not_in_remote.push(time_str);
+      });
+
+      let err_msg = "";
+      if (elem_not_empty.length > 0) {
+        err_msg += "ERR: Schedule is not empty...\n";
+        elem_not_empty.forEach((v) => (err_msg += v + "\n"));
+      }
+      if (elem_not_in_remote.length > 0)
+      {
+        err_msg+="ERR: Schedule is not in remote...\n";
+        elem_not_in_remote.forEach((v) => (err_msg += v + "\n"));
+      }
+      if (err_msg != "")
+        return Promise.reject(err_msg);
+
+      elem_to_delete.forEach((v) => d.delete(v));
+
+      return transaction.set(doc_ref, { event: d });
     });
   }
   //#endregion
