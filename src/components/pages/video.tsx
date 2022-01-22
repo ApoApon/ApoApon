@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, VFC } from "react";
+import { useEffect, useRef, VFC } from "react";
 import "../../styles/video.scss";
-import Peer from "skyway-js";
+// import Peer from "skyway-js";
 import { Layout } from "../Layout/Layout";
 
 const getLocalStream = async (): Promise<MediaStream> => {
@@ -12,20 +12,20 @@ const getLocalStream = async (): Promise<MediaStream> => {
   return localStream;
 };
 
-const setVideo = (video: HTMLVideoElement, stream: MediaStream): void => {
-  console.log(video.srcObject);
+// const setVideo = (video: HTMLVideoElement, stream: MediaStream): void => {
+//   console.log(video.srcObject);
 
-  video.srcObject = stream;
-  video.play().catch((err) => {
-    console.error(err);
-  });
-};
+//   video.srcObject = stream;
+//   video.play().catch((err) => {
+//     console.error(err);
+//   });
+// };
 
 export const Video: VFC = () => {
   const video1Ref = useRef<HTMLVideoElement>(null);
   const video2Ref = useRef<HTMLVideoElement>(null);
-  const [isPlayer, setIsPlayer] = useState(false);
-  const [peer, setPeer] = useState<Peer | null>(null);
+  // const [isPlayer, setIsPlayer] = useState(false);
+  // const [peer, setPeer] = useState<Peer | null>(null);
 
   // set up peer
   useEffect(() => {
