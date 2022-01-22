@@ -7,6 +7,7 @@ export const i_event_conv: FirestoreDataConverter<i_event> = {
     return {
       name: jsData.name,
       begin: jsData.begin,
+      begindate: jsData.begindate,
       description: jsData.description,
       owner: jsData.owner,
       challenger: jsData.challenger,
@@ -18,6 +19,7 @@ export const i_event_conv: FirestoreDataConverter<i_event> = {
     return {
       name: d.name,
       begin: d.begin.toDate(),
+      begindate: d.begindate,
       description: d.description,
       owner: doc(d.owner.firestore, d.owner.path).withConverter(i_user_conv),
       challenger:
