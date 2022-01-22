@@ -21,6 +21,7 @@ import {
   DocumentSnapshot,
 } from "firebase/firestore";
 import moment from "moment-timezone";
+import { FirebaseFirestore as CompatFirestore } from "@firebase/firestore-types";
 
 const DATE_FORMAT = "YYYY-MM-DD";
 const HHMM_FORMAT = "HH:mm";
@@ -104,8 +105,8 @@ export class DBCtrler {
 
   public user_id = "";
 
-  constructor(db: Firestore) {
-    this.db = db;
+  constructor(db: Firestore | CompatFirestore) {
+    this.db = db as Firestore;
   }
 
   public _getUserDocRef(user_id?: string) {
