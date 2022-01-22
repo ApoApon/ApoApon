@@ -1,5 +1,11 @@
-import {useState, useCallback} from "react";
-import FullCalendar, {DateSelectArg, EventApi, EventClickArg, EventContentArg, DayCellContentArg} from "@fullcalendar/react";
+import { useState, useCallback } from "react";
+import FullCalendar, {
+  DateSelectArg,
+  EventApi,
+  EventClickArg,
+  EventContentArg,
+  DayCellContentArg,
+} from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import allLocales from "@fullcalendar/core/locales-all";
@@ -9,9 +15,6 @@ import Sidebar from "./saidbar";
 import listPlugin from "@fullcalendar/list";
 // import { Calendar } from '@fullcalendar/core';
 // import googleCalendarPlugin from '@fullcalendar/google-calendar';
-
-
-
 
 const CalendarDate = () => {
   // イベントオブジェクトを取得している。
@@ -39,9 +42,7 @@ const CalendarDate = () => {
 
   // 予定を削除する
   const handleEventClick = useCallback((clickInfo: EventClickArg) => {
-    if (
-      window.confirm(`この「${clickInfo.event.title}」を削除しますか`)
-    ) {
+    if (window.confirm(`この「${clickInfo.event.title}」を削除しますか`)) {
       clickInfo.event.remove();
     }
   }, []);
@@ -71,7 +72,12 @@ const CalendarDate = () => {
           currentEvents={currentEvents}
         />
         <FullCalendar
-          plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin]}
+          plugins={[
+            dayGridPlugin,
+            interactionPlugin,
+            timeGridPlugin,
+            listPlugin,
+          ]}
           // , googleCalendarPlugin
           // googleCalendarApiKey:"<AIzaSyB4VWEPqqEobljfWN4JUdD69ntOEjxPA_A>"
           // events: {
@@ -88,18 +94,18 @@ const CalendarDate = () => {
           eventClick={handleEventClick}
           eventContent={rendarEventContent}
           headerToolbar={{
-            start:"prev, next today",
-            center:"title",
-            end:"dayGridMonth, timeGridWeek, timeGridDay, listMonth",
+            start: "prev, next today",
+            center: "title",
+            end: "dayGridMonth, timeGridWeek, timeGridDay, listMonth",
           }}
           navLinks={true}
           weekends={weekendsVisible}
           eventTimeFormat={{ hour: "2-digit", minute: "2-digit" }}
           slotLabelFormat={[{ hour: "2-digit", minute: "2-digit" }]}
           nowIndicator={true}
-          dayCellContent={(event: DayCellContentArg) => (
-            event.dayNumberText = event.dayNumberText.replace("日", "")
-          )}
+          dayCellContent={(event: DayCellContentArg) =>
+            (event.dayNumberText = event.dayNumberText.replace("日", ""))
+          }
         />
       </div>
     </div>
