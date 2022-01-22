@@ -75,7 +75,7 @@ const CalendarDate = () => {
           // , googleCalendarPlugin
           // googleCalendarApiKey:"<AIzaSyB4VWEPqqEobljfWN4JUdD69ntOEjxPA_A>"
           // events: {
-          //   googleCalendarId: 'addressbook#contacts@group.v.calendar.google.com'
+          //   googleCalendarId: 'philosophia268@gmail.com'
           // }
           initialView="dayGridMonth"
           selectable={true}
