@@ -127,6 +127,11 @@ export class DBCtrler {
     });
   }
 
+  public getUser(user_id?: string): Promise<i_user | undefined>
+  {
+    return getDoc(getUserDocRef(this.db, user_id ?? this.user_id)).then(d => d.data());
+  }
+
   public deleteUser(user_id?: string): Promise<void> {
     return deleteDoc(this.getUserDocRef(user_id));
   }
