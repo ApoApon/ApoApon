@@ -32,6 +32,9 @@
     "skyway-js": "^4.4.3"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^2.0.1",
+    "@swc/core": "^1.2.133",
+    "@swc/jest": "^0.2.17",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
     "@types/react-router-dom": "^5.3.3",
@@ -48,9 +51,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "jest": "jest",
     "eject": "react-scripts eject",
     "emu:full": "yarn build && firebase emulators:start",
-    "emu:store": "firebase emulators:start --only auth,firestore",
+    "emu:store": "firebase emulators:start --only firestore",
     "lint": "eslint --ext .ts,.tsx ./src",
     "fix": "yarn format && yarn lint:fix",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
@@ -74,5 +78,13 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {
+      "^.+\\.tsx?$": [
+        "@swc/jest"
+      ]
+    }
   }
 }

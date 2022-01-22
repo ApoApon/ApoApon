@@ -21,6 +21,7 @@ import {
   DocumentSnapshot,
 } from "firebase/firestore";
 import moment from "moment-timezone";
+import { FirebaseFirestore as CompatFirestore } from "@firebase/firestore-types";
 
 const DATE_FORMAT = "YYYY-MM-DD";
 const HHMM_FORMAT = "HH:mm";
@@ -36,6 +37,10 @@ function getJSTHHMM(date: Date): string {
 function getDateAsJST(date: Date | string, hhmm: string): Date {
   if (typeof date !== "string") date = getJSTDate(date);
   return moment(`${date} ${hhmm}`).toDate();
+}
+
+function toJST(date: Date): Date {
+  return moment(date).tz(JST_TZ).toDate();
 }
 
 //#region i_event
@@ -104,8 +109,8 @@ export class DBCtrler {
 
   public user_id = "";
 
-  constructor(db: Firestore) {
-    this.db = db;
+  constructor(db: Firestore | CompatFirestore) {
+    this.db = db as Firestore;
   }
 
   public _getUserDocRef(user_id?: string) {
@@ -128,9 +133,12 @@ export class DBCtrler {
   }
 
   public getUser(user_id?: string): Promise<i_user | undefined> {
-    return getDoc(getUserDocRef(this.db, user_id ?? this.user_id)).then((d) =>
-      d.data()
-    );
+    return getDoc(getUserDocRef(this.db, user_id ?? this.user_id))
+      .then((d) => d.data())
+      .catch((msg) => {
+        console.warn("warn:", msg);
+        return undefined;
+      });
   }
 
   public deleteUser(user_id?: string): Promise<void> {
@@ -166,70 +174,68 @@ export class DBCtrler {
   //#endregion
 
   //#region event
-  public async createEvent(
-    name: string,
-    begin: Date,
-    description: string
-  ): Promise<string> {
-    const addEventResult = await addDoc(getEventCollectionRef(this.db), {
-      begin: begin,
-      begindate: getJSTDate(begin),
+  public async createEvent(name: string, description: string): Promise<string> {
+    return addDoc(getEventCollectionRef(this.db), {
+      begin: null,
+      begindate: "",
       challenger: null,
       createddate: serverTimestamp(),
       description: description,
       name: name,
       owner: this._getUserDocRef(),
-    });
-
-    return runTransaction(this.db, async (transaction) => {
-      const current_free_time_ss = await transaction.get(
-        getFreetimeDocRef(this.db, begin, this.user_id)
-      );
-
-      if (!current_free_time_ss.exists())
-        return Promise.reject("freetime not set");
-
-      const data = current_free_time_ss.data();
-      const begin_hhmm = getJSTHHMM(begin);
-      if (!data.event.has(begin_hhmm) || !data.event.get(begin_hhmm) != null)
-        return Promise.reject("freetime not empty");
-
-      transaction.update(current_free_time_ss.ref, {
-        [`event.${begin_hhmm}`]: addEventResult,
-      });
-    })
-      .then(() => addEventResult.id)
-      .catch((reason) =>
-        deleteDoc(addEventResult).then(() => Promise.reject(reason))
-      );
+    }).then((v) => v.id);
   }
 
   public async challengeToEvent(
     begin: Date,
     event_id: string
   ): Promise<boolean> {
+    begin = toJST(begin);
     return runTransaction(this.db, async (transaction) => {
+      const begin_hhmm = getJSTHHMM(begin);
+
       const event_data_ss = await transaction.get(
         getEventDocRef(this.db, event_id)
       );
       if (!event_data_ss.exists()) return Promise.reject("event not found");
 
-      const current_free_time_ss = await transaction.get(
-        getFreetimeDocRef(this.db, event_data_ss.data().begin, this.user_id)
+      const owner_free_time_ss = await transaction.get(
+        getFreetimeDocRef(this.db, begin, event_data_ss.data().owner.id)
       );
-      if (!current_free_time_ss.exists())
-        return Promise.reject("freetime not set");
+      if (!owner_free_time_ss.exists())
+        return Promise.reject(
+          `owner's freetime (${getJSTDate(begin)}) not set`
+        );
 
-      const data = current_free_time_ss.data();
-      const begin_hhmm = getJSTHHMM(begin);
-      if (!data.event.has(begin_hhmm) || !data.event.get(begin_hhmm) != null)
-        return Promise.reject("freetime not empty");
+      const owner_freetime = owner_free_time_ss.data();
+      if (!owner_freetime.event.has(begin_hhmm))
+        return Promise.reject(`owner's freetime (${begin_hhmm}) not available`);
+      if (owner_freetime.event.get(begin_hhmm) != null)
+        return Promise.reject(`owner's freetime (${begin_hhmm}) not empty`);
 
-      transaction.update(current_free_time_ss.ref, {
+      const challenger_freetime_ss = await transaction.get(
+        getFreetimeDocRef(this.db, begin, this.user_id)
+      );
+      const challenger_freetime = challenger_freetime_ss.data();
+      if (
+        challenger_freetime != undefined &&
+        challenger_freetime.event.has(begin_hhmm) &&
+        challenger_freetime.event.get(begin_hhmm) != null
+      )
+        return Promise.reject(
+          `Challenger has already an event (${begin_hhmm})`
+        );
+
+      transaction.update(owner_free_time_ss.ref, {
+        [`event.${begin_hhmm}`]: event_data_ss.ref,
+      });
+      transaction.update(challenger_freetime_ss.ref, {
         [`event.${begin_hhmm}`]: event_data_ss.ref,
       });
       transaction.update(event_data_ss.ref, {
         challenger: this._getUserDocRef(),
+        begin: begin,
+        begindate: getJSTDate(begin),
       });
       return true;
     });
@@ -285,9 +291,12 @@ export class DBCtrler {
   }
 
   public getCurrentUserFreetime(
-    date: Date
+    date: Date,
+    user_id?: string
   ): Promise<Map<Date, DocumentReference<i_event> | null>> {
-    return getDoc(getFreetimeDocRef(this.db, date, this.user_id)).then((v) => {
+    return getDoc(
+      getFreetimeDocRef(this.db, date, user_id ?? this.user_id)
+    ).then((v) => {
       const d: i_freetime | undefined = v.data();
       if (!v.exists() || d == undefined)
         return Promise.reject("data does not exist");
