@@ -29,8 +29,7 @@ export class FirebaseCredential {
 
   constructor(opt?: FirebaseOptions, is_debug = false) {
     this.app = initializeApp(opt ?? firebaseConfig);
-    if (!is_debug)
-      this.analytics = getAnalytics(this.app);
+    if (!is_debug) this.analytics = getAnalytics(this.app);
     this.auth = getAuth(this.app);
     this.firestore = getFirestore(this.app);
 
