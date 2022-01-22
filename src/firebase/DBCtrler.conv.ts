@@ -29,9 +29,10 @@ export const i_event_conv: FirestoreDataConverter<i_event> = {
       begin: d?.begin.toDate() ?? new Date(),
       begindate: d?.begindate ?? "",
       description: d?.description ?? "",
-      owner: doc(ss.ref.firestore, d?.owner.path ?? "").withConverter(
-        i_user_conv
-      ),
+      owner: doc(
+        d?.owner.firestore ?? ss.ref.firestore,
+        d?.owner.path ?? ""
+      ).withConverter(i_user_conv),
       challenger:
         d?.challenger == null
           ? null
