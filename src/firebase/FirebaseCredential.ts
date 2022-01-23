@@ -34,7 +34,6 @@ export class FirebaseCredential {
     // デバッグ時はAnalyticsを使用しない
     if (!is_debug) this.analytics = getAnalytics(this.app);
 
-
     this.auth = getAuth(this.app);
     this.firestore = getFirestore(this.app);
 
