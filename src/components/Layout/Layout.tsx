@@ -22,7 +22,7 @@ const menu = {
       title: "予定を見る",
     },
     {
-      path: "/schedule",
+      path: "/reserve",
       title: "予定を作る",
     },
   ],
@@ -64,7 +64,7 @@ export const Layout: FC<Props> = ({ children }) => {
             <Button title="登録" onClick={openDialogToSignUp} />
           </div>
         ) : (
-          <Button title="ログアウト" onClick={handleLogout} />
+          <div><Button title="ログアウト" onClick={handleLogout} /></div>
         )}
       </header>
       <nav>
