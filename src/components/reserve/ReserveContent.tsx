@@ -5,7 +5,6 @@ import { DBCtrler } from "../../firebase/DBCtrler";
 import { FirebaseCredential } from "../../firebase/FirebaseCredential";
 
 export const ReserveContent = () => {
-
   const firestore = new FirebaseCredential().firestore;
   const db = new DBCtrler(firestore);
 
@@ -21,7 +20,6 @@ export const ReserveContent = () => {
           <h3>イベントを作成しましょう！</h3>
           <table>
             <tbody>
-
               <tr>
                 <th>
                   <label htmlFor="name">議題名</label>
@@ -41,7 +39,9 @@ export const ReserveContent = () => {
             </tbody>
           </table>
           <div className={style.btnWrapper}>
-            <button className={style.button} onClick={handleSubmit}>確定</button>
+            <button className={style.button} onClick={handleSubmit}>
+              確定
+            </button>
           </div>
         </form>
       </div>
