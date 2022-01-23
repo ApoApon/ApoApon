@@ -21,6 +21,7 @@ const firebaseConfig = {
   measurementId: "G-NN4J2D316S",
 };
 
+/** Firebaseへの接続に使用する資格情報 */
 export class FirebaseCredential {
   public readonly app: FirebaseApp;
   public readonly analytics?: Analytics;
@@ -29,10 +30,15 @@ export class FirebaseCredential {
 
   constructor(opt?: FirebaseOptions, is_debug = false) {
     this.app = initializeApp(opt ?? firebaseConfig);
+
+    // デバッグ時はAnalyticsを使用しない
     if (!is_debug) this.analytics = getAnalytics(this.app);
+
+
     this.auth = getAuth(this.app);
     this.firestore = getFirestore(this.app);
 
+    // デバッグ時にはエミュレータに接続する
     if (is_debug) {
       connectAuthEmulator(this.auth, EMU_AUTH_URL);
       connectFirestoreEmulator(this.firestore, EMU_HOST, EMU_STORE_PORT);
