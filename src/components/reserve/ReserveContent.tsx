@@ -1,17 +1,10 @@
-import { FormEvent, useState } from "react";
+import { FormEvent } from "react";
 import { Layout } from "../Layout/Layout";
 import style from "./reserve.module.scss";
 import { DBCtrler } from "../../firebase/DBCtrler";
 import { FirebaseCredential } from "../../firebase/FirebaseCredential";
 
 export const ReserveContent = () => {
-  const [event, setEvent] = useState<string[]>([]);
-  const handleInputChange = (e: { target: HTMLInputElement }) => {
-    const target = e.target;
-    const value = target.value;
-    const name = target.name;
-    setEvent({ ...event, [name]: value });
-  };
 
   const date = new Date();
   const firestore = new FirebaseCredential().firestore;
@@ -20,7 +13,6 @@ export const ReserveContent = () => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     db.createEvent("name", date, "description").catch((e) => console.log(e));
-    console.log(date);
   };
 
   return (
@@ -36,7 +28,7 @@ export const ReserveContent = () => {
                   <label htmlFor="name">議題名</label>
                 </th>
                 <td>
-                  <input type="text" id="name" onChange={handleInputChange} />
+                  <input type="text" id="name" />
                 </td>
               </tr>
               <tr>
