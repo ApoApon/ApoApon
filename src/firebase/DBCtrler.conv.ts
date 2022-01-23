@@ -8,7 +8,6 @@ import {
 } from "./DBCtrler.type";
 
 import { doc, FirestoreDataConverter } from "firebase/firestore";
-import { isMap } from "util/types";
 
 /** イベントデータについて, Firebaseとの型変換を行う */
 export const i_event_conv: FirestoreDataConverter<i_event> = {
@@ -74,7 +73,7 @@ export const i_freetime_conv: FirestoreDataConverter<i_freetime> = {
   toFirestore: (jsData) => {
     return {
       // eventには`undefined`等が入る可能性もあるため, その場合にはその値をそのまま渡すようにする
-      event: isMap(jsData.event)
+      event: jsData.event instanceof Map
         ? Object.fromEntries(jsData.event)
         : jsData.event,
     };
