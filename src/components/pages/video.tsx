@@ -1,4 +1,3 @@
-import { off } from "process";
 import { useEffect, useRef, useState, VFC } from "react";
 import "../../styles/video.scss";
 import Peer from "skyway-js";
@@ -57,7 +56,7 @@ export const Video: VFC = () => {
         lsm = localStream;
         setVideo(video1Ref.current, localStream);
       }
-      peer.on("open", (id) => {
+      peer.on("open", () => {
         const room = peer.joinRoom("room-id2", {
           mode: "mesh",
           stream: lsm,
