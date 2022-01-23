@@ -1,4 +1,5 @@
-import { useEffect, useRef, VFC } from "react";
+import { off } from "process";
+import { useEffect, useRef, useState, VFC } from "react";
 import "../../styles/video.scss";
 // import Peer from "skyway-js";
 import { Layout } from "../Layout/Layout";
@@ -26,6 +27,18 @@ export const Video: VFC = () => {
   const video2Ref = useRef<HTMLVideoElement>(null);
   // const [isPlayer, setIsPlayer] = useState(false);
   // const [peer, setPeer] = useState<Peer | null>(null);
+  const [vote, setVote] = useState<"p1" | "p2" | "none">("none");
+  const [voteRatio, setVoteRatio] = useState<number>(3);
+
+  useEffect(() => {
+    setInterval(() => {
+      const random = Math.floor(Math.random() * 2);
+      setVoteRatio((prev) => {
+        if (prev === 4 || Math.random() > 0.5) return prev - random;
+        return prev + random;
+      });
+    }, 1500);
+  }, []);
 
   // set up peer
   useEffect(() => {
@@ -45,7 +58,7 @@ export const Video: VFC = () => {
     // (async () => {
     //   if (!video1Ref.current || !video2Ref.current) return;
     //   const peer = new Peer({
-    //     key: "e6787414-79f4-4e6e-8658-9bc814d731fc",
+    //     key: "",
     //     debug: 0,
     //   });
     //   let lsm: MediaStream | undefined;
@@ -96,12 +109,31 @@ export const Video: VFC = () => {
         </div>
 
         <div className="percent">
-          <div className="percentRed"></div>
+          <div
+            className="percentRed"
+            style={{
+              width: `${(voteRatio + (vote === "p1" ? 1 : 0)) * 20}%`,
+            }}
+          ></div>
         </div>
 
         <div className="vote">
-          <button className="vote-button">Player1</button>
-          <button className="vote-button">Player2</button>
+          <button
+            className="vote-button"
+            onClick={() => {
+              setVote("p1");
+            }}
+          >
+            Player1
+          </button>
+          <button
+            className="vote-button"
+            onClick={() => {
+              setVote("p2");
+            }}
+          >
+            Player2
+          </button>
         </div>
       </div>
     </Layout>
