@@ -1,7 +1,7 @@
 import { off } from "process";
 import { useEffect, useRef, useState, VFC } from "react";
 import "../../styles/video.scss";
-// import Peer from "skyway-js";
+import Peer from "skyway-js";
 import { Layout } from "../Layout/Layout";
 
 const getLocalStream = async (): Promise<MediaStream> => {
@@ -13,14 +13,12 @@ const getLocalStream = async (): Promise<MediaStream> => {
   return localStream;
 };
 
-// const setVideo = (video: HTMLVideoElement, stream: MediaStream): void => {
-//   console.log(video.srcObject);
-
-//   video.srcObject = stream;
-//   video.play().catch((err) => {
-//     console.error(err);
-//   });
-// };
+const setVideo = (video: HTMLVideoElement, stream: MediaStream): void => {
+  video.srcObject = stream;
+  video.play().catch((err) => {
+    console.error(err);
+  });
+};
 
 export const Video: VFC = () => {
   const video1Ref = useRef<HTMLVideoElement>(null);
@@ -44,53 +42,46 @@ export const Video: VFC = () => {
   useEffect(() => {
     console.log("effect");
     (async () => {
-      // レイアウト確認用
-      const localStream = await getLocalStream().catch((e) => {
-        console.error(e);
+      if (!video1Ref.current || !video2Ref.current) return;
+      const peer = new Peer({
+        key: "1e179486-5b5e-46ac-b8ac-1f014b82918a",
+        debug: 0,
       });
-      if (!video1Ref.current || !video2Ref.current || !localStream) return;
-      video1Ref.current.srcObject = localStream;
-      video2Ref.current.srcObject = localStream;
+      let lsm: MediaStream | undefined;
+      const isVacancy1 = !video1Ref.current.srcObject;
+      const isVacancy2 = !video2Ref.current.srcObject;
+      if (isVacancy1 || isVacancy2) {
+        console.log("参戦");
+
+        const localStream = await getLocalStream();
+        lsm = localStream;
+        setVideo(video1Ref.current, localStream);
+      }
+      peer.on("open", (id) => {
+        const room = peer.joinRoom("room-id2", {
+          mode: "mesh",
+          stream: lsm,
+        });
+        room.once("open", () => {
+          console.log("=== You joined ===");
+        });
+        room.on("peerJoin", (peerId) => {
+          console.log(`=== ${peerId} joined ===`);
+        });
+        room.on("stream", (stream) => {
+          console.log("stream");
+          if (!video1Ref.current || !video2Ref.current) return;
+          if (!video1Ref.current.srcObject) {
+            video1Ref.current.srcObject = stream;
+          }
+          if (!video2Ref.current.srcObject) {
+            video2Ref.current.srcObject = stream;
+          }
+        });
+      });
     })().catch((e) => {
       console.error(e);
     });
-
-    // (async () => {
-    //   if (!video1Ref.current || !video2Ref.current) return;
-    //   const peer = new Peer({
-    //     key: "",
-    //     debug: 0,
-    //   });
-    //   let lsm: MediaStream | undefined;
-    //   if (isPlayer) {
-    //     const { localStream } = await getLocalStream();
-    //     lsm = localStream;
-    //     setVideo(video1Ref.current, localStream);
-    //   }
-    //   peer.on("open", (id) => {
-    //     const room = peer.joinRoom("room-id2", {
-    //       mode: "mesh",
-    //       stream: lsm,
-    //     });
-    //     room.once("open", () => {
-    //       console.log("=== You joined ===");
-    //     });
-    //     room.on("peerJoin", (peerId) => {
-    //       console.log(`=== ${peerId} joined ===`);
-    //     });
-    //     room.on("stream", async (stream) => {
-    //       console.log("stream");
-    //       if (!video1Ref.current || !video2Ref.current) return;
-    //       if (!video1Ref.current.srcObject) {
-    //         video1Ref.current.srcObject = stream;
-    //       }
-    //       if (!video2Ref.current.srcObject) {
-    //         video2Ref.current.srcObject = stream;
-    //       }
-    //       console.log("あなたは感染者");
-    //     });
-    //   });
-    // })();
   }, []);
 
   return (
