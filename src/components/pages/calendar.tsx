@@ -13,6 +13,7 @@ import { INITIAL_EVENTS, createEventId } from "./event_utils";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import Sidebar from "./saidbar";
 import listPlugin from "@fullcalendar/list";
+import { Layout } from "../Layout/Layout";
 // import { Calendar } from '@fullcalendar/core';
 // import googleCalendarPlugin from '@fullcalendar/google-calendar';
 
@@ -64,51 +65,53 @@ const CalendarDate = () => {
   );
 
   return (
-    <div className="calendar-app">
-      <div className="calendar-app-main">
-        <Sidebar
-          toggleWeekends={handleWeekendsToggle}
-          weekendsVisible={weekendsVisible}
-          currentEvents={currentEvents}
-        />
-        <FullCalendar
-          plugins={[
-            dayGridPlugin,
-            interactionPlugin,
-            timeGridPlugin,
-            listPlugin,
-          ]}
-          // , googleCalendarPlugin
-          // googleCalendarApiKey:"<AIzaSyB4VWEPqqEobljfWN4JUdD69ntOEjxPA_A>"
-          // events: {
-          //   googleCalendarId: 'philosophia268@gmail.com'
-          // }
-          initialView="dayGridMonth"
-          selectable={true}
-          editable={true}
-          initialEvents={INITIAL_EVENTS}
-          locales={allLocales}
-          locale="ja"
-          eventsSet={handleEvents}
-          select={handleDateSelect}
-          eventClick={handleEventClick}
-          eventContent={rendarEventContent}
-          headerToolbar={{
-            start: "prev, next today",
-            center: "title",
-            end: "dayGridMonth, timeGridWeek, timeGridDay, listMonth",
-          }}
-          navLinks={true}
-          weekends={weekendsVisible}
-          eventTimeFormat={{ hour: "2-digit", minute: "2-digit" }}
-          slotLabelFormat={[{ hour: "2-digit", minute: "2-digit" }]}
-          nowIndicator={true}
-          dayCellContent={(event: DayCellContentArg) =>
-            (event.dayNumberText = event.dayNumberText.replace("日", ""))
-          }
-        />
+    <Layout>
+      <div className="calendar-app">
+        <div className="calendar-app-main">
+          <Sidebar
+            toggleWeekends={handleWeekendsToggle}
+            weekendsVisible={weekendsVisible}
+            currentEvents={currentEvents}
+          />
+          <FullCalendar
+            plugins={[
+              dayGridPlugin,
+              interactionPlugin,
+              timeGridPlugin,
+              listPlugin,
+            ]}
+            // , googleCalendarPlugin
+            // googleCalendarApiKey:"<AIzaSyB4VWEPqqEobljfWN4JUdD69ntOEjxPA_A>"
+            // events: {
+            //   googleCalendarId: 'philosophia268@gmail.com'
+            // }
+            initialView="dayGridMonth"
+            selectable={true}
+            editable={true}
+            initialEvents={INITIAL_EVENTS}
+            locales={allLocales}
+            locale="ja"
+            eventsSet={handleEvents}
+            select={handleDateSelect}
+            eventClick={handleEventClick}
+            eventContent={rendarEventContent}
+            headerToolbar={{
+              start: "prev, next today",
+              center: "title",
+              end: "dayGridMonth, timeGridWeek, timeGridDay, listMonth",
+            }}
+            navLinks={true}
+            weekends={weekendsVisible}
+            eventTimeFormat={{ hour: "2-digit", minute: "2-digit" }}
+            slotLabelFormat={[{ hour: "2-digit", minute: "2-digit" }]}
+            nowIndicator={true}
+            dayCellContent={(event: DayCellContentArg) =>
+              (event.dayNumberText = event.dayNumberText.replace("日", ""))
+            }
+          />
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 export default CalendarDate;
