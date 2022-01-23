@@ -64,7 +64,9 @@ export const Layout: FC<Props> = ({ children }) => {
             <Button title="登録" onClick={openDialogToSignUp} />
           </div>
         ) : (
-          <div><Button title="ログアウト" onClick={handleLogout} /></div>
+          <div>
+            <Button title="ログアウト" onClick={handleLogout} />
+          </div>
         )}
       </header>
       <nav>
