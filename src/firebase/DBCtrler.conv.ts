@@ -73,9 +73,10 @@ export const i_freetime_conv: FirestoreDataConverter<i_freetime> = {
   toFirestore: (jsData) => {
     return {
       // eventには`undefined`等が入る可能性もあるため, その場合にはその値をそのまま渡すようにする
-      event: jsData.event instanceof Map
-        ? Object.fromEntries(jsData.event)
-        : jsData.event,
+      event:
+        jsData.event instanceof Map
+          ? Object.fromEntries(jsData.event)
+          : jsData.event,
     };
   },
 
