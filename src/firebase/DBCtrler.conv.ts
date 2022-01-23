@@ -10,7 +10,9 @@ import {
 import { doc, FirestoreDataConverter } from "firebase/firestore";
 import { isMap } from "util/types";
 
+/** イベントデータについて, Firebaseとの型変換を行う */
 export const i_event_conv: FirestoreDataConverter<i_event> = {
+  /** Firebaseに送るデータに変換する */
   toFirestore: (jsData) => {
     return {
       name: jsData.name,
@@ -22,6 +24,8 @@ export const i_event_conv: FirestoreDataConverter<i_event> = {
       createddate: jsData.createddate,
     };
   },
+
+  /** Firebaseから受信したデータをi_event型に変換する */
   fromFirestore: (ss, opt) => {
     const d = ss.data(opt) as i_event_sv | undefined;
     return {
@@ -44,7 +48,9 @@ export const i_event_conv: FirestoreDataConverter<i_event> = {
   },
 };
 
+/** ユーザデータについて, Firebaseとの型変換を行う */
 export const i_user_conv: FirestoreDataConverter<i_user> = {
+  /** Firebaseに送るデータに変換する */
   toFirestore: (jsData) => {
     return {
       displayname: jsData.displayname,
@@ -54,20 +60,27 @@ export const i_user_conv: FirestoreDataConverter<i_user> = {
       draw: jsData.draw,
     };
   },
+
+  /** Firebaseから送られてきたデータをi_user型に変換する */
   fromFirestore: (ss, opt) => {
     const d = ss.data(opt) as i_user;
     return d;
   },
 };
 
+/** 自由時間データについて, Firebaseとの型変換を行う */
 export const i_freetime_conv: FirestoreDataConverter<i_freetime> = {
+  /** Firebaseに送るデータに変換する */
   toFirestore: (jsData) => {
     return {
+      // eventには`undefined`等が入る可能性もあるため, その場合にはその値をそのまま渡すようにする
       event: isMap(jsData.event)
         ? Object.fromEntries(jsData.event)
         : jsData.event,
     };
   },
+
+  /** Firebaseから受信したデータをi_freetime型に変換する */
   fromFirestore: (ss, opt) => {
     const d = ss.data(opt) as i_freetime_sv;
     return {
