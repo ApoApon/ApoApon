@@ -10,7 +10,7 @@ const menu = {
       title: "ホーム",
     },
     {
-      path: "/calender",
+      path: "/calendar",
       title: "予定を見る",
     },
     {
@@ -55,7 +55,7 @@ export const Layout: FC<Props> = ({ children }) => {
           ))}
         </div>
       </nav>
-      <main>{children}</main>
+      <main className={style.main}>{children}</main>
     </div>
   );
 };
