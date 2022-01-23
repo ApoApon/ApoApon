@@ -13,6 +13,7 @@
     "@fullcalendar/list": "^5.10.1",
     "@fullcalendar/react": "^5.10.1",
     "@fullcalendar/timegrid": "^5.10.1",
+    "@material-ui/core": "^4.12.3",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
@@ -28,6 +29,7 @@
     "react-icons": "^4.3.1",
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
+    "react-social-login-buttons": "^3.6.0",
     "sass": "^1.49.0",
     "skyway-js": "^4.4.3"
   },
