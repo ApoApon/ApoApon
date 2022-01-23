@@ -44,16 +44,16 @@ table {
 
 .button {
   padding: 8px 10px;
-  background-color: var(--light-base-color);
+  background-color: var(--main-color);
   border: none;
   border-radius: 10px;
-  color: var(--main-color);
+  color: white;
   transition: 0.3s;
   font-size: 18px;
   font-weight: bold;
   width: 100%;
 
   &:hover {
-    background-color: #c4c4c4;
+    opacity: .9;
   }
 }
