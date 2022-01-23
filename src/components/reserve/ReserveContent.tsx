@@ -6,13 +6,12 @@ import { FirebaseCredential } from "../../firebase/FirebaseCredential";
 
 export const ReserveContent = () => {
 
-  const date = new Date();
   const firestore = new FirebaseCredential().firestore;
   const db = new DBCtrler(firestore);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    db.createEvent("name", date, "description").catch((e) => console.log(e));
+    db.createEvent("name", "description").catch((e) => console.log(e));
   };
 
   return (
