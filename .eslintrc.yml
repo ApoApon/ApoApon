@@ -7,7 +7,7 @@ extends:
   - plugin:react/jsx-runtime
   - plugin:@typescript-eslint/recommended
   - plugin:@typescript-eslint/recommended-requiring-type-checking
-parser: '@typescript-eslint/parser'
+parser: "@typescript-eslint/parser"
 parserOptions:
   ecmaFeatures:
     jsx: true
@@ -16,7 +16,7 @@ parserOptions:
   project: ./tsconfig.json
 plugins:
   - react
-  - '@typescript-eslint'
+  - "@typescript-eslint"
 rules:
   indent:
     - error
